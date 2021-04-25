@@ -1,5 +1,5 @@
 import './App.css';
-import LogisticsTable from './components/logistics'
+import LogisticsTable from './components/LogisticsTable'
 
 const App = () => {
   return (

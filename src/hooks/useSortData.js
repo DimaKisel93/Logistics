@@ -3,10 +3,10 @@ import React from 'react';
 const useSortableData = (items, config = null) => {
     const [sortConfig, setSortConfig] = React.useState(config);
     
-    const sortedCars = React.useMemo(() => {
-      let sortableCars = [...items];
+    const sortedItems = React.useMemo(() => {
+      let sortableItems = [...items];
       if (sortConfig !== null) {
-        sortableCars.sort((a, b) => {
+        sortableItems.sort((a, b) => {
           if (a[sortConfig.key] < b[sortConfig.key]) {
             return sortConfig.direction === 'ascending' ? -1 : 1;
           }
@@ -16,7 +16,7 @@ const useSortableData = (items, config = null) => {
           return 0;
         });
       }
-      return sortableCars;
+      return sortableItems;
     }, [items, sortConfig]);
   
     const requestSort = key => {
@@ -27,7 +27,7 @@ const useSortableData = (items, config = null) => {
       setSortConfig({ key, direction });
     }
   
-    return { items: sortedCars, requestSort, sortConfig };
+    return { items: sortedItems, requestSort, sortConfig };
 }
 
 export default useSortableData

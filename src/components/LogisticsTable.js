@@ -5,8 +5,9 @@ import useSortableData from '../hooks/useSortData'
 
 const LogisticsTable = () => {
     const [q, setQ] = useState("");
+    const [filterConfig, setFilterConfig] = useState([]);
     const [showDropDown , setShowDropDown] = useState(false);
-    const [searchColumns, setSearchColumns] = useState(["name", "amount"]);
+    const [searchColumns, setSearchColumns] = useState([]);
     const { logistics, error, loading }= useSelector(state => state.logistics);
     const {items, requestSort, sortConfig} = useSortableData(logistics);
     const {fetchAllLogistics} = useActions();
@@ -22,15 +23,50 @@ const LogisticsTable = () => {
         setShowDropDown(state => !state)
     }
 
-    function search(rows){
-        return rows.filter((row) => 
-            searchColumns.some(
-                (columns) =>
-                    row[columns].toString().toLowerCase().indexOf(q.toLowerCase()) > -1
-            )
+    const search = (rows, config = null) => {
+
+        return rows.filter((row) => {
+            if(config.includes('contains')){
+                return searchColumns.length === 0 ? 
+                    rows :
+                    searchColumns.some(
+                        (columns) =>
+                            row[columns].toString().toLowerCase().indexOf(q.toLowerCase()) > -1
+                    )
+            }else if(config.includes('equal')){
+                return searchColumns.length === 0 ? 
+                    rows :
+                    searchColumns.some(
+                        (columns) =>
+                            (q.trim() === '') ? 
+                                rows :
+                                row[columns].toString().toLowerCase() === q.toLowerCase()
+                    )
+            }else if(config.includes('more')){
+                return searchColumns.length === 0 ? 
+                    rows :
+                    searchColumns.some(
+                        (columns) =>
+                           row[columns].toString().toLowerCase() > q
+                    )
+            }else if(config.includes('less')){
+                return searchColumns.length === 0 ?
+                    rows :
+                    searchColumns.some(
+                        (columns) =>
+                            (q.trim() === '') ? 
+                                rows :
+                                row[columns].toString().toLowerCase() < q
+                    )
+            }else{
+                return rows
+            }
+        }
         )
-    } 
-    const columns = items[0] && Object.keys(items[0]);
+    }
+    
+    const columns = items[0] && Object.keys(items[0]).filter((item, index) => index > 0);
+    const filterCheck = [{id:1, condition: "equal", title: "Равно"},{id:2, condition: "contains", title: "Содержит"},{id:3, condition: "more", title: "Больше"},{id:4, condition: "less", title: "Меньше"}]
 
     useEffect(() => {
         fetchAllLogistics()
@@ -56,16 +92,17 @@ const LogisticsTable = () => {
                             </div>
                         </div> 
                         <div className="filter__block">
+                            <span>Выберите колонку</span>
                             {columns && 
                                 columns.map((column) => (
                                     <div key={column[0]}>
                                         <input type="checkbox" checked={searchColumns.includes(column)}
-                                            onChange={(e) => {
+                                            onChange={() => {
                                                 const checked = searchColumns.includes(column);
                                                 setSearchColumns(prev => checked 
                                                     ? prev.filter(sc => sc !== column)
                                                     : [...prev, column]
-                                                    )
+                                                )
                                             }}
                                         ></input>
                                         {column}
@@ -73,7 +110,25 @@ const LogisticsTable = () => {
                                 ))
                             }
                         </div>
-                        <div className="filter__block"></div> 
+                        <div className="filter__block">
+                            <span>Условия фильтрации</span>
+                            {filterCheck.map((item) => 
+                                <div key={item.id}>
+                                    <input type="checkbox" checked={filterConfig.includes(item.condition)}
+                                        onClick={() =>{
+                                            const checked = filterConfig.includes(item.condition);
+                                            setFilterConfig(prev => checked 
+                                                ? prev.filter(sc => sc !== item.condition)
+                                                : [...prev, item.condition]
+                                            )
+                                        }} 
+                                    >
+                                    </input>
+                                    {item.title}
+                                </div>
+                            )
+                            }
+                        </div> 
                     </div> 
                 }
             </div>
@@ -96,7 +151,7 @@ const LogisticsTable = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {items && search(items).map((item) => (
+                        {items && search(items, filterConfig).map((item) => (
                             <tr key={item.id}>
                                 <td align="center">{item.date}</td>
                                 <td>{item.name}</td>

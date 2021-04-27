@@ -47,37 +47,29 @@ body {
   color: #4d4d4d;
 }
 
-#title {
-  text-align: center;
-}
-
-#cars {
+.table {
   border-collapse: collapse;
   border: 3px solid #ddd;
 }
 
-#cars td,
-#cars th {
+.table td,
+.table th {
   border: 1px solid #ddd;
   padding: 12px;
 }
 
-#cars tr:hover {
+.table tr:hover {
   background-color: #ddd;
 }
 
-#cars th {
+.table th {
   padding: 10px;
   text-align: center;
   background-color: #c72424;
   color: white;
 }
 
-.opration {
-  text-align: center;
-}
-
-.button {
+.filter__button {
   border: none;
   outline: none;
   font-size: 11px;
@@ -88,24 +80,15 @@ body {
   cursor: pointer;
   border: 1px solid #f44336;
   background-color: transparent;
-  width: 177px;
+  width: 208px;
 }
 
 .button:active {
   border: 1px solid blue;
 }
 
-.form-group{
-  display: flex;
-  flex-direction: column;
-}
-
-.form-group label{
-  margin-bottom: 10px;
-}
-
-.form-group input{
-  margin-bottom: 5px;
+thead button{
+  width: 200px;
 }
 
 thead button.ascending::after {
@@ -137,13 +120,23 @@ thead button.descending::after {
   text-align: left;
 }
 
+.filter__query input{
+  width: 200px;
+}
+
 .filter__block{
   background: lightgray;
   border-radius: 7px;
 }
 
+.filter__block label{
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
 .filter__condition{
-  width: 177px;
+  width: 200px;
   height: 100px;
   background: lightgray;
   border-radius: 7px;
@@ -152,4 +145,8 @@ thead button.descending::after {
 .edit__container{
   display: flex;
   justify-content: space-between;
+}
+
+.bold{
+  font-weight: bold;
 }

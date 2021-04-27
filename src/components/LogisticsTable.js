@@ -4,13 +4,13 @@ import { useActions } from "../hooks/useAction";
 import useSortableData from '../hooks/useSortData'
 
 const LogisticsTable = () => {
-    const [q, setQ] = useState("");
-    const [filterConfig, setFilterConfig] = useState([]);
-    const [showDropDown , setShowDropDown] = useState(false);
-    const [searchColumns, setSearchColumns] = useState([]);
-    const { logistics, error, loading }= useSelector(state => state.logistics);
+    const [query, setQuery] = useState("");
+    const [filterCondition, setFilterCondition] = useState("");
+    const [searchColumn, setSearchColumn] = useState("");
+    const [showFilter , setShowFilter] = useState(false);
+    const { logistics, error, loading, numPages, currentPage }= useSelector(state => state.logistics);
     const {items, requestSort, sortConfig} = useSortableData(logistics);
-    const {fetchAllLogistics} = useActions();
+    const {fetchAllLogistics, fetchCurrentPage} = useActions();
 
     const getClassNamesFor = (name) => {
         if (!sortConfig) {
@@ -19,58 +19,56 @@ const LogisticsTable = () => {
         return sortConfig.key === name ? sortConfig.direction : undefined;
     };
 
-    const handleClickDropdown = () => {
-        setShowDropDown(state => !state)
+    const handleClickFilter = () => {
+        setShowFilter(state => !state)
     }
 
-    const search = (rows, config = null) => {
-
+    const search = (rows, config = null, searchColumn) => {
         return rows.filter((row) => {
-            if(config.includes('contains')){
-                return searchColumns.length === 0 ? 
+            switch(config){
+                case "contains" : return searchColumn.length === 0 ? 
                     rows :
-                    searchColumns.some(
+                    [searchColumn].some(
                         (columns) =>
-                            row[columns].toString().toLowerCase().indexOf(q.toLowerCase()) > -1
+                            row[columns].toString().toLowerCase().indexOf(query.toLowerCase()) > -1
                     )
-            }else if(config.includes('equal')){
-                return searchColumns.length === 0 ? 
+                case "equal" : return searchColumn.length === 0 ? 
                     rows :
-                    searchColumns.some(
+                    [searchColumn].some(
                         (columns) =>
-                            (q.trim() === '') ? 
+                            (query.trim() === '') ? 
                                 rows :
-                                row[columns].toString().toLowerCase() === q.toLowerCase()
+                                row[columns].toString().toLowerCase() === query.toLowerCase()
                     )
-            }else if(config.includes('more')){
-                return searchColumns.length === 0 ? 
-                    rows :
-                    searchColumns.some(
-                        (columns) =>
-                           row[columns].toString().toLowerCase() > q
+                case "more" : return searchColumn.length === 0 ? 
+                        rows :
+                        [searchColumn].some(
+                            (columns) =>
+                            row[columns].toString().toLowerCase() > query
                     )
-            }else if(config.includes('less')){
-                return searchColumns.length === 0 ?
-                    rows :
-                    searchColumns.some(
-                        (columns) =>
-                            (q.trim() === '') ? 
-                                rows :
-                                row[columns].toString().toLowerCase() < q
-                    )
-            }else{
-                return rows
+                case "less" : return searchColumn.length === 0 ?
+                        rows :
+                        [searchColumn].some(
+                            (columns) =>
+                                (query.trim() === '') ? 
+                                    rows :
+                                    row[columns].toString().toLowerCase() < query
+                        )
+                default :
+                    return rows
             }
         }
         )
     }
-    
-    const columns = items[0] && Object.keys(items[0]).filter((item, index) => index > 0);
-    const filterCheck = [{id:1, condition: "equal", title: "Равно"},{id:2, condition: "contains", title: "Содержит"},{id:3, condition: "more", title: "Больше"},{id:4, condition: "less", title: "Меньше"}]
 
     useEffect(() => {
-        fetchAllLogistics()
+        fetchAllLogistics(currentPage)
     },[])
+
+    let pages = [];
+    for(let i=1; i <= numPages; i++ ){
+        pages.push(i)
+    }
 
     if(loading){
         return <h1>Идет загрузка...</h1>
@@ -80,60 +78,41 @@ const LogisticsTable = () => {
     return <h1>{error}</h1>
     }
 
+
     return(
         <div className="table__wrapper">  
             <div className="filter__wrapper">
-                <button className="button" onClick={() => handleClickDropdown()}>Фильтр</button>
-                {showDropDown &&
+                <button className="filter__button" onClick={() => handleClickFilter()}>Фильтр</button>
+                {showFilter &&
                     <div className="filter__container">
                         <div className="filter__query">
-                            <div className="filter__query_container">
-                                <input type="text" value={q} onChange={(e) => setQ(e.target.value)}></input>    
-                            </div>
+                            <input type="text" value={query} onChange={(e) => setQuery(e.target.value)}></input>    
                         </div> 
                         <div className="filter__block">
-                            <span>Выберите колонку</span>
-                            {columns && 
-                                columns.map((column) => (
-                                    <div key={column[0]}>
-                                        <input type="checkbox" checked={searchColumns.includes(column)}
-                                            onChange={() => {
-                                                const checked = searchColumns.includes(column);
-                                                setSearchColumns(prev => checked 
-                                                    ? prev.filter(sc => sc !== column)
-                                                    : [...prev, column]
-                                                )
-                                            }}
-                                        ></input>
-                                        {column}
-                                    </div>
-                                ))
-                            }
+                            <label>Выберите колонку
+                                <select value={searchColumn} onChange={(e) => setSearchColumn(e.target.value)}>
+                                    <option value="date">Дата</option>
+                                    <option value="name">Название</option>
+                                    <option value="amount">Количество</option>
+                                    <option value="distance">Расстояние</option>
+                                </select>
+                            </label>
                         </div>
                         <div className="filter__block">
-                            <span>Условия фильтрации</span>
-                            {filterCheck.map((item) => 
-                                <div key={item.id}>
-                                    <input type="checkbox" checked={filterConfig.includes(item.condition)}
-                                        onClick={() =>{
-                                            const checked = filterConfig.includes(item.condition);
-                                            setFilterConfig(prev => checked 
-                                                ? prev.filter(sc => sc !== item.condition)
-                                                : [...prev, item.condition]
-                                            )
-                                        }} 
-                                    >
-                                    </input>
-                                    {item.title}
-                                </div>
-                            )
-                            }
+                            <label>Условия фильтрации
+                                <select value={filterCondition} onChange={(e) => setFilterCondition(e.target.value)}>
+                                    <option value="equal">Равно</option>
+                                    <option value="contains">Содержит</option>
+                                    <option value="more">Больше</option>
+                                    <option value="less">Меньше</option>
+                                </select>
+                            </label>
                         </div> 
                     </div> 
                 }
             </div>
             <div className="table__container">
-                <table className="table table-hover">
+                <table className="table">
                     <thead>
                         <tr className="thead-dark col-12">
                             <th scope="col">
@@ -151,7 +130,7 @@ const LogisticsTable = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {items && search(items, filterConfig).map((item) => (
+                        {items && search(items, filterCondition, searchColumn).map((item) => (
                             <tr key={item.id}>
                                 <td align="center">{item.date}</td>
                                 <td>{item.name}</td>
@@ -161,6 +140,11 @@ const LogisticsTable = () => {
                         ))}
                     </tbody>
                 </table>
+            {pages.map( p => {
+                return <span className={currentPage === p && 'bold'} onClick={() => fetchCurrentPage(p)}>{p}</span>
+            })
+
+            }
             </div>
         </div>
     )

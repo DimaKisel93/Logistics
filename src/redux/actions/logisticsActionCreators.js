@@ -1,31 +1,31 @@
 import * as constants from '../constants'; 
 import axios from 'axios';
 
-export const fetchAllLogistics = (currentPage) => {
+export const fetchAllShipments = (currentPage) => {
   return (dispatch) => {
-    dispatch(fetchLogisticStarted());
+    dispatch(fetchShipmentsStarted());
     axios
-    .get(`http://localhost:4000/logistic?page=${currentPage}`)
+    .get(`http://localhost:4000/shipments?page=${currentPage}`)
     .then(res => {
-      dispatch(setAllLogistic(res.data));
+      dispatch(setAllShipments(res.data));
     })
     .catch(err => {
-      dispatch(fetchLogisticFailure(err.message));
+      dispatch(fetchShipmentsFailure(err.message));
     });
   };
 }
 
-const setAllLogistic = (data) => ({
-    type: constants.SET_ALL_LOGISTICS,
+const setAllShipments = (data) => ({
+    type: constants.SET_ALL_SHIPMENTS,
     payload: data
 });
   
-const fetchLogisticStarted = () => ({
-    type: constants.FETCH_LOGISTICS_STARTED
+const fetchShipmentsStarted = () => ({
+    type: constants.FETCH_SHIPMENTS_STARTED
 });
 
-const fetchLogisticFailure = error => ({
-    type: constants.FETCH_LOGISTICS_FAILURE,
+const fetchShipmentsFailure = error => ({
+    type: constants.FETCH_SHIPMENTS_FAILURE,
     payload: {
       error
     }
@@ -33,15 +33,15 @@ const fetchLogisticFailure = error => ({
 
 export const fetchCurrentPage = (currentPage) => {
   return (dispatch) => {
-    dispatch(fetchLogisticStarted());
+    dispatch(fetchShipmentsStarted());
     axios
-    .get(`http://localhost:4000/logistic?page=${currentPage}`)
+    .get(`http://localhost:4000/shipments?page=${currentPage}`)
     .then(res => {
       res.data.currentPage = currentPage
       dispatch(setCurrentPage(res.data));
     })
     .catch(err => {
-      dispatch(fetchLogisticFailure(err.message));
+      dispatch(fetchShipmentsFailure(err.message));
     });
   }
 }

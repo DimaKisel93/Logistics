@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
-import logistics from './logisticsReducer';
+import shipments from './shipmentsReducer';
 
-const rootReducer = combineReducers({ logistics });
+const rootReducer = combineReducers({ shipments });
 
 export default rootReducer;

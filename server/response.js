@@ -1,11 +1,10 @@
-exports.status =  (res, rows, numPages, numPerPage, numRows) => {
+exports.status =  (res, rows, numberPages, numberPerPage) => {
 
     const data = {
         "status": 200,
-        "numPages": numPages,
-        "numPerPage": numPerPage,
-        "numRows": numRows,
-        "rows": [...rows]
+        "numberPages": numberPages,
+        "numberPerPage": numberPerPage,
+        "shipments": [...rows]
     }
     res.json(data)
     res.end()

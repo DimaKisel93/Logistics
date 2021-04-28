@@ -1,10 +1,10 @@
 import './App.css';
-import LogisticsTable from './components/LogisticsTable'
+import ShipmentsTable from './components/ShipmentsTable'
 
 const App = () => {
   return (
     <div className="App">
-      <LogisticsTable />
+      <ShipmentsTable />
     </div>
   );
 }

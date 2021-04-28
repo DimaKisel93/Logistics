@@ -1,7 +1,7 @@
 module.exports = (app) => {
-  const LogisticsController = require('../controllers/logistics-controller');
+  const ShipmentsController = require('../controllers/shipments-controller');
   const IndexController = require('../controllers/index-controller');
   
   app.route('/').get(IndexController.index)
-  app.route('/logistic').get(LogisticsController.getLogistics)
+  app.route('/shipments').get(ShipmentsController.getShipments)
 }

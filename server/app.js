@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 4000;
-const routes = require('./routes/PublicLogisticsRoutes')
+const routes = require('./routes/PublicShipmentsRoutes')
 
 app.use(express.urlencoded({extended:true}))
 app.use(express.json())

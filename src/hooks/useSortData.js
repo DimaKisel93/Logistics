@@ -27,7 +27,7 @@ const useSortableData = (items, config = null) => {
       setSortConfig({ key, direction });
     }
   
-    return { items: sortedItems, requestSort, sortConfig };
+    return { sortedItems, requestSort, sortConfig };
 }
 
 export default useSortableData

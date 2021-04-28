@@ -105,6 +105,7 @@ thead button.descending::after {
 
 .table__wrapper{
   display: flex;
+  margin-bottom: 20px;
 }
 
 .table__container{
@@ -147,6 +148,21 @@ thead button.descending::after {
   justify-content: space-between;
 }
 
-.bold{
+.pagination{
+  display: flex;
+  justify-content: center;
+}
+
+.page{
+  color: black;
+  width: 30px;
+  height: 25px;
+  border: 2px solid #282c34;
+  margin: 0 2px;
+}
+
+.page-active{
   font-weight: bold;
+  color: white;
+  background-color: #c72424;
 }

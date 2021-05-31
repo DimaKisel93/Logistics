@@ -4,7 +4,7 @@ import { useActions } from "../hooks/useAction";
 import { filterData } from "../common/filterData";
 import { formatDate } from "../common/formatDate";
 import useSortableData from '../hooks/useSortData'
-import { Select } from "./SelectComponent";
+import Filter from "./Filter";
 
 const ShipmentsTable = () => {
     const [query, setQuery] = useState("");
@@ -14,19 +14,6 @@ const ShipmentsTable = () => {
     const { shipments, error, loading, numberPages, currentPage }= useSelector(state => state.shipments);
     const { sortedItems, requestSort, sortConfig } = useSortableData(shipments);
     const { fetchAllShipments, fetchCurrentPage } = useActions();
-
-    const columnForShipmentsSelect = [
-        { id:1, value: 'route', label: 'Маршрут' },
-        { id:2, value: 'amount', label: 'Количество' },
-        { id:3, value: 'distance', label: 'Расстояние' }
-    ]
-
-    const conditionForShipmentsSelect = [
-        { id:1, value: 'equal', label: 'Равно' },
-        { id:2, value: 'contains', label: 'Содержит' },
-        { id:3, value: 'more', label: 'Больше' },
-        { id:4, value: 'less', label: 'Меньше' }
-    ]
 
     const getClassNamesFor = (name) => {
         if (!sortConfig) return
@@ -39,7 +26,7 @@ const ShipmentsTable = () => {
 
     useEffect(() => {
         fetchAllShipments(currentPage)
-    },[])
+    },[currentPage])
 
     let pages = [];
     for(let i=1; i <= numberPages; i++ ){
@@ -60,21 +47,7 @@ const ShipmentsTable = () => {
                 <div className="filter__wrapper">
                     <button className="filter__button" onClick={() => handleClickFilter()}>Фильтр</button>
                     {showFilter &&
-                        <div className="filter__container">
-                            <div className="filter__query">
-                                <input type="text" value={query} onChange={(e) => setQuery(e.target.value)}></input>    
-                            </div> 
-                            <div className="filter__block">
-                                <label>Выберите колонку
-                                    <Select value={filterColumn} onChange={setFilterColumn} options={columnForShipmentsSelect}/>
-                                </label>
-                            </div>
-                            <div className="filter__block">
-                                <label>Условия фильтрации
-                                    <Select value={filterCondition} onChange={setFilterCondition} options={conditionForShipmentsSelect}/>
-                                </label>
-                            </div> 
-                        </div> 
+                        <Filter query={query} setQuery={setQuery} filterCondition={filterCondition} setFilterCondition={setFilterCondition} filterColumn={filterColumn} setFilterColumn={setFilterColumn}/>
                     }
                 </div>
                 <div className="table__container">

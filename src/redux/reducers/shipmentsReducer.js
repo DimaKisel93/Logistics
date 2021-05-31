@@ -1,6 +1,6 @@
 import * as constants from '../constants';
 
-const initialState = {
+export const initialState = {
   loading: false,
   shipments: [],
   numberPerPage: 0,
@@ -14,7 +14,8 @@ export default function shipmentsReducer(state = initialState, action) {
     case constants.FETCH_SHIPMENTS_STARTED:
         return {
             ...state,
-            loading: true
+            loading: true,
+            error:null
         };
     case constants.SET_ALL_SHIPMENTS:
         return {

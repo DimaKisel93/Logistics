@@ -4,7 +4,7 @@ import axios from 'axios';
 export const fetchAllShipments = (currentPage) => {
   return (dispatch) => {
     dispatch(fetchShipmentsStarted());
-    axios
+    return axios
     .get(`http://localhost:4000/shipments?page=${currentPage}`)
     .then(res => {
       dispatch(setAllShipments(res.data));
@@ -34,7 +34,7 @@ const fetchShipmentsFailure = error => ({
 export const fetchCurrentPage = (currentPage) => {
   return (dispatch) => {
     dispatch(fetchShipmentsStarted());
-    axios
+    return axios
     .get(`http://localhost:4000/shipments?page=${currentPage}`)
     .then(res => {
       res.data.currentPage = currentPage
